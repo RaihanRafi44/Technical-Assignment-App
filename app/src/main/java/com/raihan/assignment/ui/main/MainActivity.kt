@@ -25,9 +25,15 @@ class MainActivity : ComponentActivity() {
                         currentScreen = "event"
                     })
                 } else {
-                    EventScreen(onLogout = {
-                        currentScreen = "login"
-                    })
+                    EventScreen(
+                        events = emptyList(), // Menambahkan parameter events yang dibutuhkan
+                        onConfirmLogout = {
+                            currentScreen = "login"
+                        },
+                        onNewEventClick = {
+
+                        }
+                    )
                 }
             }
         }
