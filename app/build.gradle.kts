@@ -7,11 +7,7 @@ plugins {
 
 android {
     namespace = "com.raihan.assignment"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.raihan.assignment"
@@ -31,6 +27,23 @@ android {
             optimization {
                 enable = false
             }
+        }
+    }
+    flavorDimensions += "env"
+    productFlavors {
+        create("production"){
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = "\"https://skill-test2.free.beeceptor.com/api/\""
+            )
+        }
+        create("integration") {
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = "\"https://skill-test2.free.beeceptor.com/api/\""
+            )
         }
     }
     compileOptions {
