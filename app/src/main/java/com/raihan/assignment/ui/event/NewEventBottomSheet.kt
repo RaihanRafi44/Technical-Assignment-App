@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +45,15 @@ fun NewEventBottomSheet(
     var endDate by remember { mutableStateOf("") }
     var endTime by remember { mutableStateOf("") }
     var organizer by remember { mutableStateOf("") }
+
+    // State untuk DatePicker
+    var showDateRangePicker by remember { mutableStateOf(false) }
+
+    val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
+
+    // State untuk TimePicker
+    var showStartTimePicker by remember { mutableStateOf(false) }
+    var showEndTimePicker by remember { mutableStateOf(false) }
 
     // State untuk URI gambar (Thumbnail)
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -120,16 +133,30 @@ fun NewEventBottomSheet(
                             value = startDate,
                             onValueChange = { startDate = it },
                             placeholder = "Start Date",
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1.5f)
+                                .clickable { showDateRangePicker = true },
                             leadingIcon = {
                                 Icon(Icons.Outlined.DateRange, contentDescription = "Date", tint = Color.Gray)
-                            }
+                            },
+                            readOnly = true,
+                            enabled = false // Workaround to make the whole field clickable
                         )
+//                        FormTextField(
+//                            value = startTime,
+//                            onValueChange = { startTime = it },
+//                            placeholder = "Time",
+//                            modifier = Modifier.weight(1f)
+//                        )
                         FormTextField(
                             value = startTime,
                             onValueChange = { startTime = it },
                             placeholder = "Time",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showStartTimePicker = true }, // ✅ Buka picker saat diklik
+                            readOnly = true, // ✅ Agar tidak memunculkan keyboard
+                            enabled = false
                         )
                     }
 
@@ -139,16 +166,30 @@ fun NewEventBottomSheet(
                             value = endDate,
                             onValueChange = { endDate = it },
                             placeholder = "End Date",
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1.5f)
+                                .clickable { showDateRangePicker = true },
                             leadingIcon = {
                                 Icon(Icons.Outlined.DateRange, contentDescription = "Date", tint = Color.Gray)
-                            }
+                            },
+                            readOnly = true,
+                            enabled = false // Workaround to make the whole field clickable
                         )
+//                        FormTextField(
+//                            value = endTime,
+//                            onValueChange = { endTime = it },
+//                            placeholder = "Time",
+//                            modifier = Modifier.weight(1f)
+//                        )
                         FormTextField(
                             value = endTime,
                             onValueChange = { endTime = it },
                             placeholder = "Time",
-                            modifier = Modifier.weight(1f)
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { showEndTimePicker = true }, // ✅ Buka picker saat diklik
+                            readOnly = true, // ✅ Agar tidak memunculkan keyboard
+                            enabled = false
                         )
                     }
 
@@ -200,6 +241,256 @@ fun NewEventBottomSheet(
             }
         }
     }
+
+    // Date Range Picker Dialog
+    if (showDateRangePicker) {
+        DateRangePickerModal(
+            onDateRangeSelected = { startMillis, endMillis ->
+                if (startMillis != null) {
+                    startDate = dateFormatter.format(Date(startMillis))
+                }
+                if (endMillis != null) {
+                    endDate = dateFormatter.format(Date(endMillis))
+                } else if (startMillis != null) {
+                    // If only start date is selected, set end date to the same
+                    //endDate = dateFormatter.format(Date(startMillis))
+                    endDate = ""
+                }
+                showDateRangePicker = false
+            },
+            onDismiss = { showDateRangePicker = false }
+        )
+    }
+
+    // Start Time Picker Dialog
+    if (showStartTimePicker) {
+        TimePickerModal(
+            onTimeSelected = { time ->
+                startTime = time
+                showStartTimePicker = false
+            },
+            onDismiss = { showStartTimePicker = false }
+        )
+    }
+
+    // End Time Picker Dialog
+    if (showEndTimePicker) {
+        TimePickerModal(
+            onTimeSelected = { time ->
+                endTime = time
+                showEndTimePicker = false
+            },
+            onDismiss = { showEndTimePicker = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DateRangePickerModal(
+    onDateRangeSelected: (Long?, Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val dateRangePickerState = rememberDateRangePickerState()
+
+    // Formatter khusus untuk headline agar formatnya rapi
+    val dateFormatter = remember { SimpleDateFormat("d MMM yyyy", Locale.getDefault()) }
+
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateRangeSelected(
+                    dateRangePickerState.selectedStartDateMillis,
+                    dateRangePickerState.selectedEndDateMillis
+                )
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DateRangePicker(
+            state = dateRangePickerState,
+            showModeToggle = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 400.dp, max = 600.dp)
+                .padding(bottom = 16.dp),
+
+            // 1. Kustomisasi Title (Bagian "Pilih tanggal")
+            title = {
+                Text(
+                    text = "Pilih tanggal",
+                    modifier = Modifier.padding(start = 24.dp, top = 16.dp, end = 24.dp, bottom = 4.dp),
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+            },
+
+            // 2. Kustomisasi Headline (Bagian "7 Sep 2026 - 9 Sep 2026")
+            headline = {
+                val start = dateRangePickerState.selectedStartDateMillis?.let {
+                    SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(it))
+                } ?: "Start date"
+
+                val end = dateRangePickerState.selectedEndDateMillis?.let {
+                    SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(it))
+                } ?: "End date"
+
+                Text(
+                    text = "$start - $end",
+                    modifier = Modifier.padding(start = 24.dp, end = 12.dp, bottom = 12.dp),
+                    fontSize = 18.sp, // Ukuran font diperkecil agar tidak turun ke baris baru
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1 // Memaksa agar tetap 1 baris
+                )
+            }
+        )
+    }
+}
+
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun TimePickerModal(
+//    onTimeSelected: (String) -> Unit,
+//    onDismiss: () -> Unit
+//) {
+//    val currentTime = java.util.Calendar.getInstance()
+//    val timePickerState = rememberTimePickerState(
+//        initialHour = currentTime.get(java.util.Calendar.HOUR_OF_DAY),
+//        initialMinute = currentTime.get(java.util.Calendar.MINUTE),
+//        is24Hour = true // Format 24 jam (misal: 14:30)
+//    )
+//
+//    AlertDialog(
+//        onDismissRequest = onDismiss,
+//        dismissButton = {
+//            TextButton(onClick = onDismiss) {
+//                Text("Cancel")
+//            }
+//        },
+//        confirmButton = {
+//            TextButton(onClick = {
+//                // Format hasil agar selalu 2 digit, misal jam 8 jadi "08:00"
+//                val formattedTime = String.format(
+//                    Locale.getDefault(),
+//                    "%02d:%02d",
+//                    timePickerState.hour,
+//                    timePickerState.minute
+//                )
+//                onTimeSelected(formattedTime)
+//            }) {
+//                Text("OK")
+//            }
+//        },
+//        text = {
+//            Column(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalAlignment = Alignment.CenterHorizontally
+//            ) {
+//                TimePicker(state = timePickerState)
+//            }
+//        }
+//    )
+//}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerModal(
+    onTimeSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val currentTime = java.util.Calendar.getInstance()
+    val timePickerState = rememberTimePickerState(
+        initialHour = currentTime.get(java.util.Calendar.HOUR_OF_DAY),
+        initialMinute = currentTime.get(java.util.Calendar.MINUTE),
+        is24Hour = false // ✅ Ubah ke false agar tombol AM/PM muncul seperti di gambar
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+//        confirmButton = {
+//            TextButton(onClick = {
+//                // timePickerState.hour tetap akan mengembalikan format 24 jam (0-23)
+//                // meskipun UI-nya menggunakan AM/PM, jadi aman untuk disimpan ke database
+//                val formattedTime = String.format(
+//                    Locale.getDefault(),
+//                    "%02d:%02d",
+//                    timePickerState.hour,
+//                    timePickerState.minute
+//                )
+//                onTimeSelected(formattedTime)
+//            }) {
+//                Text("OK")
+//            }
+//        },
+        confirmButton = {
+            TextButton(onClick = {
+                val hour24 = timePickerState.hour
+                val minute = timePickerState.minute
+
+                // Tentukan AM atau PM
+                val isPm = hour24 >= 12
+                val amPm = if (isPm) "PM" else "AM"
+
+                // Konversi jam 0 atau 13-23 menjadi format 1-12
+                val hour12 = if (hour24 % 12 == 0) 12 else hour24 % 12
+
+                // Format hasil akhir menjadi "07:00 PM"
+                val formattedTime = String.format(
+                    Locale.getDefault(),
+                    "%02d:%02d %s",
+                    hour12,
+                    minute,
+                    amPm
+                )
+                onTimeSelected(formattedTime)
+            }) {
+                Text("OK")
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Enter time",
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    textAlign = TextAlign.Start,
+                    fontSize = 14.sp
+                )
+
+                // ✅ Ini yang akan memunculkan desain kotak angka seperti di gambar
+                TimeInput(
+                    state = timePickerState,
+                    colors = TimePickerDefaults.colors(
+                        // Warna background AM/PM saat dipilih (Biru)
+                        periodSelectorSelectedContainerColor = Color(0xFF3B68FF),
+                        // Warna teks AM/PM saat dipilih (Putih agar kontras)
+                        periodSelectorSelectedContentColor = Color.White,
+                        // Warna garis tepi (border) kotak AM/PM
+                        periodSelectorBorderColor = Color(0xFF3B68FF),
+
+                        // (Opsional) Jika ingin warna kotak angka jam/menit ikut senada saat diklik:
+                        timeSelectorSelectedContainerColor = Color(0xFFE0E8FF), // Biru sangat muda
+                        timeSelectorSelectedContentColor = Color(0xFF3B68FF) // Teks biru tua
+                    )
+                )
+            }
+        }
+    )
 }
 
 // Komponen Reusable untuk Text Field agar seragam dan rapi
@@ -209,7 +500,9 @@ fun FormTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    leadingIcon: @Composable (() -> Unit)? = null
+    leadingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+    enabled: Boolean = true
 ) {
     TextField(
         value = value,
@@ -217,15 +510,21 @@ fun FormTextField(
         placeholder = { Text(text = placeholder, color = Color.Gray) },
         leadingIcon = leadingIcon,
         singleLine = true,
+        readOnly = readOnly,
+        enabled = enabled,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFF5F5F5),
             unfocusedContainerColor = Color(0xFFF5F5F5),
+            disabledContainerColor = Color(0xFFF5F5F5),
             focusedIndicatorColor = Color.Transparent, // Menghilangkan garis bawah default
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            cursorColor = Color.Black
+            cursorColor = Color.Black,
+            disabledTextColor = Color.Black, // Ensure text is visible when disabled
+            disabledPlaceholderColor = Color.Gray
         ),
         shape = RoundedCornerShape(12.dp),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
     )
 }
