@@ -57,12 +57,15 @@ fun NewEventBottomSheet(
         sheetState = sheetState,
         containerColor = Color(0xFF3B68FF), // Background biru sesuai gambar
         dragHandle = null, // Menghilangkan garis drag handle bawaan
-        modifier = Modifier.fillMaxHeight(0.9f) // Memastikan sheet cukup tinggi
+        //modifier = Modifier.fillMaxHeight(0.9f) // Memastikan sheet cukup tinggi
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                //.fillMaxSize()
+                .fillMaxWidth()
+                .fillMaxHeight(0.95f)
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 40.dp)
+                //.padding(16.dp)
                 .navigationBarsPadding() // Melindungi dari tombol navigasi device
         ) {
             // Header (Judul & Tombol Close)
@@ -94,11 +97,16 @@ fun NewEventBottomSheet(
             Surface(
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
-                modifier = Modifier.fillMaxSize()
+                //modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    //.weight(1f)
+                    .weight(1f, fill = false)
             ) {
                 Column(
                     modifier = Modifier
                         .padding(24.dp)
+                        //.padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 16.dp)
                         .verticalScroll(rememberScrollState()), // Agar form bisa di-scroll jika layar kecil
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
