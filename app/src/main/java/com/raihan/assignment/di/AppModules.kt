@@ -7,7 +7,7 @@ import com.raihan.assignment.data.source.local.database.dao.EventDao
 import com.raihan.assignment.data.source.network.service.AssignAppApiService
 import com.raihan.assignment.ui.login.LoginViewModel
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
