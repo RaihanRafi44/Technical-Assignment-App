@@ -83,11 +83,10 @@ fun NewEventBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = Color(0xFF3B68FF),
-        dragHandle = null, // Menghilangkan garis drag handle
+        dragHandle = null, // Menghilangkan garis drag handle pada bottom sheet
     ) {
         Column(
             modifier = Modifier
-                //.fillMaxSize()
                 .fillMaxWidth()
                 .fillMaxHeight(0.95f)
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 40.dp)
@@ -368,9 +367,6 @@ fun DateRangePickerModal(
 ) {
     val dateRangePickerState = rememberDateRangePickerState()
 
-    // Formatter khusus untuk headline agar formatnya rapi
-    val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH) }
-
     DatePickerDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -438,7 +434,7 @@ fun TimePickerModal(
     val timePickerState = rememberTimePickerState(
         initialHour = currentTime.get(java.util.Calendar.HOUR_OF_DAY),
         initialMinute = currentTime.get(java.util.Calendar.MINUTE),
-        is24Hour = false // ✅ Ubah ke false agar tombol AM/PM muncul seperti di gambar
+        is24Hour = false // Bernilai false agar tombol AM/PM muncul di time picker
     )
 
     AlertDialog(
@@ -454,7 +450,7 @@ fun TimePickerModal(
                 val hour24 = timePickerState.hour
                 val minute = timePickerState.minute
 
-                // Tentukan AM atau PM
+                // Menentukan AM atau PM
                 val isPm = hour24 >= 12
                 val amPm = if (isPm) "PM" else "AM"
 
@@ -490,16 +486,15 @@ fun TimePickerModal(
                 TimeInput(
                     state = timePickerState,
                     colors = TimePickerDefaults.colors(
-                        // Warna background AM/PM saat dipilih (Biru)
+                        // Warna background AM/PM saat dipilih
                         periodSelectorSelectedContainerColor = Color(0xFF3B68FF),
-                        // Warna teks AM/PM saat dipilih (Putih agar kontras)
+                        // Warna teks AM/PM saat dipilih
                         periodSelectorSelectedContentColor = Color.White,
-                        // Warna garis tepi (border) kotak AM/PM
+                        // Warna border kotak AM/PM
                         periodSelectorBorderColor = Color(0xFF3B68FF),
 
-                        // (Opsional) Jika ingin warna kotak angka jam/menit ikut senada saat diklik:
-                        timeSelectorSelectedContainerColor = Color(0xFFE0E8FF), // Biru sangat muda
-                        timeSelectorSelectedContentColor = Color(0xFF3B68FF) // Teks biru tua
+                        timeSelectorSelectedContainerColor = Color(0xFFE0E8FF),
+                        timeSelectorSelectedContentColor = Color(0xFF3B68FF)
                     )
                 )
             }
@@ -507,7 +502,7 @@ fun TimePickerModal(
     )
 }
 
-// Komponen Reusable untuk Text Field agar seragam dan rapi
+// Komponen Reusable untuk Text Field
 @Composable
 fun FormTextField(
     value: String,
@@ -530,11 +525,11 @@ fun FormTextField(
             focusedContainerColor = Color(0xFFF5F5F5),
             unfocusedContainerColor = Color(0xFFF5F5F5),
             disabledContainerColor = Color(0xFFF5F5F5),
-            focusedIndicatorColor = Color.Transparent, // Menghilangkan garis bawah default
+            focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
             cursorColor = Color.Black,
-            disabledTextColor = Color.Black, // Ensure text is visible when disabled
+            disabledTextColor = Color.Black,
             disabledPlaceholderColor = Color.Gray
         ),
         shape = RoundedCornerShape(12.dp),

@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raihan.assignment.utils.ResultWrapper
@@ -58,8 +57,6 @@ fun LoginScreen(
                 viewModel.resetLoginState() // Clean state after navigation
             },
             doOnError = {
-                // We use payload for Login Gagal because our Mapper puts it in payload if it fails but still maps
-                // Or if it's a real network error, it might be in exception/message
                 val message = it.payload?.displayMessage ?: it.message ?: "Login Failed"
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
@@ -134,7 +131,7 @@ fun LoginScreen(
                     if (username.isNotEmpty() && password.isNotEmpty()) {
                         viewModel.doLogin(username, password)
                     } else {
-                        Toast.makeText(context, "Harap isi username dan password", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please enter your username and password", Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier

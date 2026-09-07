@@ -105,7 +105,7 @@ fun EventScreen(
                 showLogoutSheet = false
             },
             onConfirmLogout = {
-                // Jalankan aksi logout, lalu tutup sheet
+                // Aksi logout, lalu tutup sheet
                 onConfirmLogout()
                 showLogoutSheet = false
             }

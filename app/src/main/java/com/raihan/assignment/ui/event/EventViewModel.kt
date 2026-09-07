@@ -22,10 +22,10 @@ class EventViewModel(private val repository: EventRepository) : ViewModel() {
         // Mencari "Closest Upcoming Event"
         val upcomingMainEvent = entities.firstOrNull { it.startTimestamp >= currentTime }
 
-        // 3. Mapping data ke UI Model
+        // Mapping data ke UI Model
         val mappedList = entities.map { entity ->
             entity.toDomain(
-                // Jadikan Main Event HANYA JIKA event ini adalah upcomingMainEvent
+                // Menjadikan Main Event HANYA JIKA event ini adalah upcomingMainEvent
                 isMainEvent = upcomingMainEvent != null && entity.id == upcomingMainEvent.id
             )
         }

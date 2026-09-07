@@ -16,9 +16,7 @@ mockk = "1.14.5"
 turbine = "1.2.1"
 core-testing = "2.2.0"
 http-logging = "5.1.0"
-groupie = "2.10.1"
 coil = "2.7.0"
-paging = "3.3.6"
 navigationCompose = "2.9.3"
 uiUnit = "1.9.0"
 foundation = "1.9.0"
@@ -63,15 +61,10 @@ mockk-agent = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "core-testing" }
 
-# Grouphy
-groupie = { module = "com.github.lisawray.groupie:groupie", version.ref = "groupie" }
-
 # room
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
-# Paging
-paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-ui-unit = { group = "androidx.compose.ui", name = "ui-unit", version.ref = "uiUnit" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
