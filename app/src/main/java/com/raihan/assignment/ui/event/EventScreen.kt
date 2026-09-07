@@ -2,7 +2,6 @@ package com.raihan.assignment.ui.event
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,47 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raihan.assignment.ui.event.otherEventsSection
-
-//@Composable
-//fun EventScreen(onLogout: () -> Unit) {
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Text(text = "Ini halaman utama event", fontSize = 20.sp)
-//        Spacer(modifier = Modifier.height(24.dp))
-//        Button(onClick = onLogout) {
-//            Text(text = "Logout")
-//        }
-//    }
-//}
-
-// --- Model Data ---
-data class EventModel(
-    val id: String,
-    val name: String,
-    val startDateTime: String,
-    val endDateTime: String? = null, // Hanya untuk event utama
-    val organizer: String,
-    val location: String,
-    val description: String? = null, // Hanya untuk event utama
-    val isMainEvent: Boolean = false
-)
-
-// --- Warna Kustom sesuai mockup ---
-val PrimaryBlue = Color(0xFF3B68FF)
-val DangerRed = Color(0xFFD32F2F)
-val TextGray = Color(0xFF757575)
-val DividerGray = Color(0xFFE0E0E0)
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.raihan.assignment.data.model.Event
 
 @Composable
 fun EventScreen(
-    events: List<EventModel>,
+    events: List<Event>,
+    viewModel: EventViewModel,
     onConfirmLogout: () -> Unit = {},
     onNewEventClick: () -> Unit = {}
 ) {
@@ -150,10 +116,11 @@ fun EventScreen(
     if (showNewEventSheet) {
         NewEventBottomSheet(
             onDismiss = { showNewEventSheet = false },
-            onSubmit = { name, desc, loc ->
-                // TODO: Lakukan aksi save/kirim ke ViewModel atau API di sini
-
-                // Tutup sheet setelah submit
+            onSubmit = { name, desc, loc, startDate, startTime, endDate, endTime, organizer, imgUri, timestamp ->
+                // Panggil ViewModel untuk save data ke Room
+                viewModel.addEvent(
+                    name, desc, loc, startDate, startTime, endDate, endTime, organizer, imgUri, timestamp
+                )
                 showNewEventSheet = false
             }
         )
@@ -227,41 +194,5 @@ fun EmptyStateView(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
             fontSize = 16.sp
         )
-    }
-}
-
-// --- Preview untuk Testing ---
-@Preview(showBackground = true)
-@Composable
-fun EventDuplicateScreenPreview() {
-    val dummyEvents = listOf(
-        EventModel(
-            id = "1",
-            name = "Tech Conference 2025",
-            startDateTime = "Oct 15, 2025, 1:00 PM",
-            endDateTime = "Oct 16, 2025, 5:00 PM",
-            organizer = "Technovate, Inc.",
-            location = "Conference Room A",
-            description = "Join us at the Tech Conference hosted by Technovate, Inc., where innovation meets inspiration! Discover the latest trends in technology, network with industry leaders, and participate in engaging workshops. Don't miss this opportunity to elevate your tech knowledge!",
-            isMainEvent = true
-        ),
-        EventModel(
-            id = "2",
-            name = "Web Development Workshop",
-            startDateTime = "Apr 20, 2026, 1:00 PM",
-            organizer = "Innovation Hub",
-            location = "Room 202"
-        ),
-        EventModel(
-            id = "3",
-            name = "UI/UX Masterclass",
-            startDateTime = "May 05, 2026, 10:00 AM",
-            organizer = "Design Thinkers",
-            location = "Studio B"
-        )
-    )
-
-    MaterialTheme {
-        EventScreen(events = dummyEvents)
     }
 }

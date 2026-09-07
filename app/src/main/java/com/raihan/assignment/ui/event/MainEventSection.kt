@@ -11,9 +11,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.raihan.assignment.data.model.Event
 
 @Composable
-fun MainEventSection(event: EventModel) {
+fun MainEventSection(event: Event) {
     Column(modifier = Modifier.fillMaxWidth()) {
         // Thumbnail Image & Badge
         Box(
@@ -23,6 +25,14 @@ fun MainEventSection(event: EventModel) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color.LightGray) // Placeholder sebelum gambar dari API dimuat
         ) {
+
+            // Load Thumbnail dari Image URI lokal
+            AsyncImage(
+                model = event.imageUri,
+                contentDescription = "Event Thumbnail",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
             // Badge Upcoming
             Box(
                 modifier = Modifier

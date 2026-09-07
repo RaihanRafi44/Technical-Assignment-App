@@ -15,9 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.raihan.assignment.data.model.Event
 
 // Extension function agar list ini menyatu dengan LazyColumn utama
-fun LazyListScope.otherEventsSection(events: List<EventModel>) {
+fun LazyListScope.otherEventsSection(events: List<Event>) {
     if (events.isEmpty()) return
 
     item {
@@ -37,7 +38,7 @@ fun LazyListScope.otherEventsSection(events: List<EventModel>) {
 }
 
 @Composable
-fun OtherEventCard(event: EventModel) {
+fun OtherEventCard(event: Event) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -1,5 +1,6 @@
 package com.raihan.assignment.ui.event
 
+import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,10 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -32,7 +38,12 @@ import java.util.Locale
 @Composable
 fun NewEventBottomSheet(
     onDismiss: () -> Unit,
-    onSubmit: (name: String, desc: String, loc: String) -> Unit // Sesuaikan parameter dengan kebutuhan
+    onSubmit: (
+        name: String, desc: String, loc: String,
+        startDate: String, startTime: String,
+        endDate: String, endTime: String,
+        organizer: String, imageUri: String,
+        startTimestamp: Long) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -65,6 +76,8 @@ fun NewEventBottomSheet(
         imageUri = uri
     }
 
+    val context = LocalContext.current
+
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -78,7 +91,6 @@ fun NewEventBottomSheet(
                 .fillMaxWidth()
                 .fillMaxHeight(0.95f)
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 40.dp)
-                //.padding(16.dp)
                 .navigationBarsPadding() // Melindungi dari tombol navigasi device
         ) {
             // Header (Judul & Tombol Close)
@@ -142,20 +154,15 @@ fun NewEventBottomSheet(
                             readOnly = true,
                             enabled = false // Workaround to make the whole field clickable
                         )
-//                        FormTextField(
-//                            value = startTime,
-//                            onValueChange = { startTime = it },
-//                            placeholder = "Time",
-//                            modifier = Modifier.weight(1f)
-//                        )
+
                         FormTextField(
                             value = startTime,
                             onValueChange = { startTime = it },
                             placeholder = "Time",
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { showStartTimePicker = true }, // ✅ Buka picker saat diklik
-                            readOnly = true, // ✅ Agar tidak memunculkan keyboard
+                                .clickable { showStartTimePicker = true }, // Buka picker saat diklik
+                            readOnly = true, // Agar tidak memunculkan keyboard
                             enabled = false
                         )
                     }
@@ -175,12 +182,7 @@ fun NewEventBottomSheet(
                             readOnly = true,
                             enabled = false // Workaround to make the whole field clickable
                         )
-//                        FormTextField(
-//                            value = endTime,
-//                            onValueChange = { endTime = it },
-//                            placeholder = "Time",
-//                            modifier = Modifier.weight(1f)
-//                        )
+
                         FormTextField(
                             value = endTime,
                             onValueChange = { endTime = it },
@@ -196,26 +198,87 @@ fun NewEventBottomSheet(
                     FormTextField(value = organizer, onValueChange = { organizer = it }, placeholder = "Organizer")
 
                     // Field Upload Thumbnail (Klik untuk membuka galeri)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFF5F5F5))
-                            .clickable { galleryLauncher.launch("image/*") } // Trigger intent galeri
-                            .padding(16.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Image,
-                                contentDescription = "Upload",
-                                tint = Color.Gray
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(160.dp)
+//                            .clip(RoundedCornerShape(12.dp))
+//                            .background(Color(0xFFF5F5F5))
+//                            .clickable { galleryLauncher.launch("image/*") } // Trigger intent galeri
+//                            .padding(16.dp)
+//                    ) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(
+//                                imageVector = Icons.Outlined.Image,
+//                                contentDescription = "Upload",
+//                                tint = Color.Gray
+//                            )
+//                            Spacer(modifier = Modifier.width(12.dp))
+//                            Text(
+//                                text = if (imageUri != null) "Image Selected!" else "Upload Event Thumbnail",
+//                                color = if (imageUri != null) Color.Black else Color.Gray,
+//                                fontSize = 16.sp
+//                            )
+//                        }
+//                    }
+
+                    if (imageUri != null) {
+                        // 1. Tampilkan Preview Gambar jika imageUri tidak null
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable { galleryLauncher.launch("image/*") }
+                        ) {
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = "Event Thumbnail Preview",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
                             )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text(
-                                text = if (imageUri != null) "Image Selected!" else "Upload Event Thumbnail",
-                                color = if (imageUri != null) Color.Black else Color.Gray,
-                                fontSize = 16.sp
-                            )
+
+                            // (Opsional) Tambahkan teks/overlay kecil agar user tahu gambar bisa diganti
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .fillMaxWidth()
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                                    .padding(vertical = 6.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "Tap to change image",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFFF5F5F5))
+                                .clickable { galleryLauncher.launch("image/*") }
+                                .padding(16.dp),
+                            //contentAlignment = Alignment.Center // Pusatkan konten ke tengah
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Image,
+                                    contentDescription = "Upload",
+                                    tint = Color.Gray
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = "Upload Event Thumbnail",
+                                    color = Color.Gray,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
                     }
 
@@ -223,7 +286,28 @@ fun NewEventBottomSheet(
 
                     // Tombol Submit
                     Button(
-                        onClick = { onSubmit(eventName, description, location) },
+                        onClick = {
+                            // Kalkulasi timestamp untuk pengurutan
+                            val format = SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.getDefault())
+                            val dateString = "$startDate $startTime"
+                            val startTimestamp = try {
+                                format.parse(dateString)?.time ?: 0L
+                            } catch (e: Exception) {
+                                0L
+                            }
+
+                            // Salin gambar ke internal storage dan dapatkan URI permanennya
+                            val permanentImageUri = imageUri?.let { uri ->
+                                saveImageToInternalStorage(context, uri)
+                            } ?: ""
+
+                            onSubmit(
+                                eventName, description, location,
+                                startDate, startTime, endDate, endTime,
+                                organizer, permanentImageUri,
+                                startTimestamp
+                            )
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
@@ -346,59 +430,14 @@ fun DateRangePickerModal(
                 Text(
                     text = "$start - $end",
                     modifier = Modifier.padding(start = 24.dp, end = 12.dp, bottom = 12.dp),
-                    fontSize = 18.sp, // Ukuran font diperkecil agar tidak turun ke baris baru
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
-                    maxLines = 1 // Memaksa agar tetap 1 baris
+                    maxLines = 1
                 )
             }
         )
     }
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun TimePickerModal(
-//    onTimeSelected: (String) -> Unit,
-//    onDismiss: () -> Unit
-//) {
-//    val currentTime = java.util.Calendar.getInstance()
-//    val timePickerState = rememberTimePickerState(
-//        initialHour = currentTime.get(java.util.Calendar.HOUR_OF_DAY),
-//        initialMinute = currentTime.get(java.util.Calendar.MINUTE),
-//        is24Hour = true // Format 24 jam (misal: 14:30)
-//    )
-//
-//    AlertDialog(
-//        onDismissRequest = onDismiss,
-//        dismissButton = {
-//            TextButton(onClick = onDismiss) {
-//                Text("Cancel")
-//            }
-//        },
-//        confirmButton = {
-//            TextButton(onClick = {
-//                // Format hasil agar selalu 2 digit, misal jam 8 jadi "08:00"
-//                val formattedTime = String.format(
-//                    Locale.getDefault(),
-//                    "%02d:%02d",
-//                    timePickerState.hour,
-//                    timePickerState.minute
-//                )
-//                onTimeSelected(formattedTime)
-//            }) {
-//                Text("OK")
-//            }
-//        },
-//        text = {
-//            Column(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalAlignment = Alignment.CenterHorizontally
-//            ) {
-//                TimePicker(state = timePickerState)
-//            }
-//        }
-//    )
-//}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -420,21 +459,7 @@ fun TimePickerModal(
                 Text("Cancel")
             }
         },
-//        confirmButton = {
-//            TextButton(onClick = {
-//                // timePickerState.hour tetap akan mengembalikan format 24 jam (0-23)
-//                // meskipun UI-nya menggunakan AM/PM, jadi aman untuk disimpan ke database
-//                val formattedTime = String.format(
-//                    Locale.getDefault(),
-//                    "%02d:%02d",
-//                    timePickerState.hour,
-//                    timePickerState.minute
-//                )
-//                onTimeSelected(formattedTime)
-//            }) {
-//                Text("OK")
-//            }
-//        },
+
         confirmButton = {
             TextButton(onClick = {
                 val hour24 = timePickerState.hour
@@ -472,7 +497,7 @@ fun TimePickerModal(
                     fontSize = 14.sp
                 )
 
-                // ✅ Ini yang akan memunculkan desain kotak angka seperti di gambar
+                // Time picker
                 TimeInput(
                     state = timePickerState,
                     colors = TimePickerDefaults.colors(
@@ -527,4 +552,28 @@ fun FormTextField(
         modifier = modifier
             .fillMaxWidth()
     )
+}
+
+fun saveImageToInternalStorage(context: Context, uri: Uri): String? {
+    return try {
+        val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+        // Buat nama file unik berdasarkan waktu
+        val fileName = "event_thumbnail_${System.currentTimeMillis()}.jpg"
+        val file = File(context.filesDir, fileName)
+
+        val outputStream = FileOutputStream(file)
+
+        // Salin data
+        inputStream.copyTo(outputStream)
+
+        // Tutup stream
+        inputStream.close()
+        outputStream.close()
+
+        // Kembalikan URI lokal yang permanen (format: file:///...)
+        Uri.fromFile(file).toString()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 }

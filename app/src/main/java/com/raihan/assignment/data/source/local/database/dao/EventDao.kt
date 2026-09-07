@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EventDao {
 
-    @Query("SELECT * FROM event")
+    //@Query("SELECT * FROM event")
+    // Mengambil semua event, diurutkan dari yang paling dekat (Ascending)
+    @Query("SELECT * FROM event ORDER BY start_timestamp ASC")
     fun getAllEvent(): Flow<List<EventEntity>>
 
     @Insert
