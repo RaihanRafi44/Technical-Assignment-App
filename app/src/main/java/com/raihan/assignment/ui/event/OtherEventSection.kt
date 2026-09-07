@@ -15,9 +15,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.raihan.assignment.data.model.Event
 
 // Extension function agar list ini menyatu dengan LazyColumn utama
-fun LazyListScope.otherEventsSection(events: List<EventModel>) {
+fun LazyListScope.otherEventsSection(events: List<Event>) {
     if (events.isEmpty()) return
 
     item {
@@ -37,7 +38,7 @@ fun LazyListScope.otherEventsSection(events: List<EventModel>) {
 }
 
 @Composable
-fun OtherEventCard(event: EventModel) {
+fun OtherEventCard(event: Event) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -48,7 +49,7 @@ fun OtherEventCard(event: EventModel) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             // Kolom Kiri
             Column(modifier = Modifier.weight(1f)) {
@@ -66,10 +67,13 @@ fun OtherEventCard(event: EventModel) {
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Kolom Kanan
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
                     text = event.startDateTime,
                     fontSize = 14.sp,

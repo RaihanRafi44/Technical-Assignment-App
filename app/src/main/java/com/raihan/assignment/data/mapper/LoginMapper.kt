@@ -7,6 +7,6 @@ fun LoginResponse?.toLogin(): Login {
     return if (this?.code == "00") {
         Login(isSuccess = true, displayMessage = this.message)
     } else {
-        Login(isSuccess = false, displayMessage = "Username atau password salah.")
+        Login(isSuccess = false, displayMessage = "Username or password incorrect.")
     }
 }

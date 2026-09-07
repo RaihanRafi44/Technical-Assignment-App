@@ -95,8 +95,6 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
     implementation(libs.http.logging)
-    implementation(libs.paging.runtime)
-    implementation(libs.groupie)
     implementation(libs.coil)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.ui.unit)
