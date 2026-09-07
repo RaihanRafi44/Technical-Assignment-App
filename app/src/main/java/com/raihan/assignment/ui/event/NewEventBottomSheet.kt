@@ -2,6 +2,7 @@ package com.raihan.assignment.ui.event
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -60,7 +61,7 @@ fun NewEventBottomSheet(
     // State untuk DatePicker
     var showDateRangePicker by remember { mutableStateOf(false) }
 
-    val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy", Locale.getDefault()) }
+    val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH) }
 
     // State untuk TimePicker
     var showStartTimePicker by remember { mutableStateOf(false) }
@@ -81,9 +82,8 @@ fun NewEventBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF3B68FF), // Background biru sesuai gambar
-        dragHandle = null, // Menghilangkan garis drag handle bawaan
-        //modifier = Modifier.fillMaxHeight(0.9f) // Memastikan sheet cukup tinggi
+        containerColor = Color(0xFF3B68FF),
+        dragHandle = null, // Menghilangkan garis drag handle
     ) {
         Column(
             modifier = Modifier
@@ -91,7 +91,7 @@ fun NewEventBottomSheet(
                 .fillMaxWidth()
                 .fillMaxHeight(0.95f)
                 .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 40.dp)
-                .navigationBarsPadding() // Melindungi dari tombol navigasi device
+                .navigationBarsPadding()
         ) {
             // Header (Judul & Tombol Close)
             Box(
@@ -122,17 +122,14 @@ fun NewEventBottomSheet(
             Surface(
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
-                //modifier = Modifier.fillMaxSize()
                 modifier = Modifier
                     .fillMaxWidth()
-                    //.weight(1f)
                     .weight(1f, fill = false)
             ) {
                 Column(
                     modifier = Modifier
                         .padding(24.dp)
-                        //.padding(start = 24.dp, top = 24.dp, end = 24.dp, bottom = 16.dp)
-                        .verticalScroll(rememberScrollState()), // Agar form bisa di-scroll jika layar kecil
+                        .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     FormTextField(value = eventName, onValueChange = { eventName = it }, placeholder = "Event Name")
@@ -162,7 +159,7 @@ fun NewEventBottomSheet(
                             modifier = Modifier
                                 .weight(1f)
                                 .clickable { showStartTimePicker = true }, // Buka picker saat diklik
-                            readOnly = true, // Agar tidak memunculkan keyboard
+                            readOnly = true,
                             enabled = false
                         )
                     }
@@ -189,41 +186,16 @@ fun NewEventBottomSheet(
                             placeholder = "Time",
                             modifier = Modifier
                                 .weight(1f)
-                                .clickable { showEndTimePicker = true }, // ✅ Buka picker saat diklik
-                            readOnly = true, // ✅ Agar tidak memunculkan keyboard
+                                .clickable { showEndTimePicker = true }, // Buka picker saat diklik
+                            readOnly = true,
                             enabled = false
                         )
                     }
 
                     FormTextField(value = organizer, onValueChange = { organizer = it }, placeholder = "Organizer")
 
-                    // Field Upload Thumbnail (Klik untuk membuka galeri)
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(160.dp)
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .background(Color(0xFFF5F5F5))
-//                            .clickable { galleryLauncher.launch("image/*") } // Trigger intent galeri
-//                            .padding(16.dp)
-//                    ) {
-//                        Row(verticalAlignment = Alignment.CenterVertically) {
-//                            Icon(
-//                                imageVector = Icons.Outlined.Image,
-//                                contentDescription = "Upload",
-//                                tint = Color.Gray
-//                            )
-//                            Spacer(modifier = Modifier.width(12.dp))
-//                            Text(
-//                                text = if (imageUri != null) "Image Selected!" else "Upload Event Thumbnail",
-//                                color = if (imageUri != null) Color.Black else Color.Gray,
-//                                fontSize = 16.sp
-//                            )
-//                        }
-//                    }
-
                     if (imageUri != null) {
-                        // 1. Tampilkan Preview Gambar jika imageUri tidak null
+                        // Tampilkan Preview Gambar jika imageUri tidak null
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -238,7 +210,6 @@ fun NewEventBottomSheet(
                                 contentScale = ContentScale.Crop
                             )
 
-                            // (Opsional) Tambahkan teks/overlay kecil agar user tahu gambar bisa diganti
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.BottomCenter)
@@ -263,7 +234,6 @@ fun NewEventBottomSheet(
                                 .background(Color(0xFFF5F5F5))
                                 .clickable { galleryLauncher.launch("image/*") }
                                 .padding(16.dp),
-                            //contentAlignment = Alignment.Center // Pusatkan konten ke tengah
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
@@ -287,16 +257,39 @@ fun NewEventBottomSheet(
                     // Tombol Submit
                     Button(
                         onClick = {
-                            // Kalkulasi timestamp untuk pengurutan
-                            val format = SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.getDefault())
-                            val dateString = "$startDate $startTime"
+                            // Cek input
+                            if (eventName.isBlank()) {
+                                Toast.makeText(context, "Event Name is required", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (location.isBlank()) {
+                                Toast.makeText(context, "Location is required", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (startDate.isBlank()) {
+                                Toast.makeText(context, "Start Date is required", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (startTime.isBlank()) {
+                                Toast.makeText(context, "Start Time is required", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
+                            if (organizer.isBlank()) {
+                                Toast.makeText(context, "Organizer is required", Toast.LENGTH_SHORT).show()
+                                return@Button
+                            }
                             val startTimestamp = try {
-                                format.parse(dateString)?.time ?: 0L
+                                val formatStr = if (startTime.isNotBlank()) "MMM dd, yyyy hh:mm a" else "MMM dd, yyyy"
+                                val dateStr = if (startTime.isNotBlank()) "$startDate $startTime".trim() else startDate.trim()
+
+                                val format = SimpleDateFormat(formatStr, Locale.ENGLISH)
+                                format.parse(dateStr)?.time ?: Long.MAX_VALUE
                             } catch (e: Exception) {
-                                0L
+                                e.printStackTrace()
+                                Long.MAX_VALUE
                             }
 
-                            // Salin gambar ke internal storage dan dapatkan URI permanennya
+                            // Salin gambar ke internal storage untuk mendapatkan URI permanen
                             val permanentImageUri = imageUri?.let { uri ->
                                 saveImageToInternalStorage(context, uri)
                             } ?: ""
@@ -336,8 +329,6 @@ fun NewEventBottomSheet(
                 if (endMillis != null) {
                     endDate = dateFormatter.format(Date(endMillis))
                 } else if (startMillis != null) {
-                    // If only start date is selected, set end date to the same
-                    //endDate = dateFormatter.format(Date(startMillis))
                     endDate = ""
                 }
                 showDateRangePicker = false
@@ -378,7 +369,7 @@ fun DateRangePickerModal(
     val dateRangePickerState = rememberDateRangePickerState()
 
     // Formatter khusus untuk headline agar formatnya rapi
-    val dateFormatter = remember { SimpleDateFormat("d MMM yyyy", Locale.getDefault()) }
+    val dateFormatter = remember { SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH) }
 
     DatePickerDialog(
         onDismissRequest = onDismiss,
@@ -407,7 +398,6 @@ fun DateRangePickerModal(
                 .heightIn(min = 400.dp, max = 600.dp)
                 .padding(bottom = 16.dp),
 
-            // 1. Kustomisasi Title (Bagian "Pilih tanggal")
             title = {
                 Text(
                     text = "Pilih tanggal",
@@ -417,14 +407,13 @@ fun DateRangePickerModal(
                 )
             },
 
-            // 2. Kustomisasi Headline (Bagian "7 Sep 2026 - 9 Sep 2026")
             headline = {
                 val start = dateRangePickerState.selectedStartDateMillis?.let {
-                    SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(it))
+                    SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH).format(Date(it)) // UBAH DI SINI
                 } ?: "Start date"
 
                 val end = dateRangePickerState.selectedEndDateMillis?.let {
-                    SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(it))
+                    SimpleDateFormat("MMM dd, yyyy", Locale.ENGLISH).format(Date(it)) // UBAH DI SINI
                 } ?: "End date"
 
                 Text(

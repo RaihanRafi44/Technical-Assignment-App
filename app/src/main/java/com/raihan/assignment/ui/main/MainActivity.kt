@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
                     // Observe data dari StateFlow ViewModel
                     val events by eventViewModel.eventList.collectAsState()
                     EventScreen(
-                        events = events, // Menambahkan parameter events yang dibutuhkan
+                        events = events,
                         viewModel = eventViewModel,
                         onConfirmLogout = {
                             currentScreen = "login"

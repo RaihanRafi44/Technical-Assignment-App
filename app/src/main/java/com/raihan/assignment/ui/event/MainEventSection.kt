@@ -23,7 +23,7 @@ fun MainEventSection(event: Event) {
                 .fillMaxWidth()
                 .height(300.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color.LightGray) // Placeholder sebelum gambar dari API dimuat
+                .background(Color.LightGray)
         ) {
 
             // Load Thumbnail dari Image URI lokal

@@ -30,7 +30,7 @@ fun LogoutConfirmationBottomSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
-                // Memberikan padding bawah dan melindungi dari navigation bar (seperti kasus sebelumnya)
+                // Memberikan padding bawah
                 .padding(bottom = 32.dp)
                 .navigationBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -40,7 +40,7 @@ fun LogoutConfirmationBottomSheet(
                 text = "Logout Confirmation",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFFE50000), // Merah sesuai gambar
+                color = Color(0xFFE50000),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -58,19 +58,19 @@ fun LogoutConfirmationBottomSheet(
             Text(
                 text = "You will need to log in again to access your account.",
                 fontSize = 14.sp,
-                color = Color(0xFF757575), // Abu-abu
+                color = Color(0xFF757575),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Tombol Log Out (Biru)
+            // Tombol Log Out
             Button(
                 onClick = onConfirmLogout,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3B68FF)),
-                shape = RoundedCornerShape(50) // Membuat bentuk pill (melengkung penuh)
+                shape = RoundedCornerShape(50)
             ) {
                 Text(
                     text = "Log Out",
@@ -82,13 +82,12 @@ fun LogoutConfirmationBottomSheet(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Tombol Cancel (Abu-abu muda)
+            // Tombol Cancel
             Button(
                 onClick = onDismiss,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
-                // Menggunakan abu-abu sangat muda untuk background, teks hitam
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFFF2F2F2),
                     contentColor = Color.Black

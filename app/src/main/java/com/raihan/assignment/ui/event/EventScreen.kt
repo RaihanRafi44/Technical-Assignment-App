@@ -72,7 +72,7 @@ fun EventScreen(
                     .padding(horizontal = 16.dp),
                 contentPadding = PaddingValues(top = 24.dp, bottom = 24.dp)
             ) {
-                // Judul Event Hub tetap di dalam halaman utama
+                // Judul Event Hub
                 item {
                     Text(
                         text = "Event Hub",
@@ -138,7 +138,6 @@ fun StickyBottomBar(onLogoutClick: () -> Unit, onNewEventClick: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                //.padding(horizontal = 16.dp, vertical = 16.dp),
                 .padding(start = 16.dp, top = 20.dp, bottom = 12.dp, end = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -162,7 +161,6 @@ fun StickyBottomBar(onLogoutClick: () -> Unit, onNewEventClick: () -> Unit) {
             Button(
                 onClick = onNewEventClick,
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1644EF)),
-                //shape = RoundedCornerShape(24.dp),
                 shape = RoundedCornerShape(
                     topStart = 32.dp,
                     bottomStart = 32.dp,
@@ -171,7 +169,7 @@ fun StickyBottomBar(onLogoutClick: () -> Unit, onNewEventClick: () -> Unit) {
                 ),
                 modifier = Modifier
                     .weight(1f) // Membuat tombol memanjang mengisi sisa ruang ke kanan
-                    .height(56.dp), // Menyesuaikan tinggi agar proporsional seperti di gambar
+                    .height(56.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add", tint = Color.White)

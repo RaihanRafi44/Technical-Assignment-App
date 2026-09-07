@@ -8,6 +8,6 @@ data class Event(
     val organizer: String,
     val location: String,
     val description: String? = null,
-    val imageUri: String = "", // Properti baru untuk memuat gambar
+    val imageUri: String = "",
     val isMainEvent: Boolean = false
 )

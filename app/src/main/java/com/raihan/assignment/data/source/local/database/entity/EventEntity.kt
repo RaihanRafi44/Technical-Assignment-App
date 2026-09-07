@@ -27,5 +27,5 @@ data class EventEntity(
     @ColumnInfo(name = "thumbnail_uri")
     var thumbnailUri: String,
     @ColumnInfo(name = "start_timestamp")
-    var startTimestamp: Long // Digunakan untuk mencari event terdekat
+    var startTimestamp: Long
 )

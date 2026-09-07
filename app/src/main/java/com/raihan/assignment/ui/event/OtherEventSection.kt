@@ -49,7 +49,7 @@ fun OtherEventCard(event: Event) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Top
         ) {
             // Kolom Kiri
             Column(modifier = Modifier.weight(1f)) {
@@ -67,10 +67,13 @@ fun OtherEventCard(event: Event) {
                 )
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(16.dp))
 
             // Kolom Kanan
-            Column(horizontalAlignment = Alignment.End) {
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
                 Text(
                     text = event.startDateTime,
                     fontSize = 14.sp,

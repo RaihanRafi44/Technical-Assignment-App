@@ -14,16 +14,27 @@ import kotlinx.coroutines.launch
 
 class EventViewModel(private val repository: EventRepository) : ViewModel() {
 
-    // Mengubah Flow dari Entity menjadi Flow dari Domain Model (EventModel)
     val eventList: StateFlow<List<Event>> = repository.getAllEvents().map { entities ->
-        // Karena di DAO sudah diurutkan ASC, item index 0 adalah event terdekat
-        entities.mapIndexed { index, entity ->
-            entity.toDomain(isMainEvent = index == 0)
+
+        // Waktu saat ini dalam milidetik
+        val currentTime = System.currentTimeMillis()
+
+        // Mencari "Closest Upcoming Event"
+        val upcomingMainEvent = entities.firstOrNull { it.startTimestamp >= currentTime }
+
+        // 3. Mapping data ke UI Model
+        val mappedList = entities.map { entity ->
+            entity.toDomain(
+                // Jadikan Main Event HANYA JIKA event ini adalah upcomingMainEvent
+                isMainEvent = upcomingMainEvent != null && entity.id == upcomingMainEvent.id
+            )
         }
+
+        mappedList
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
+        initialValue = emptyList<Event>()
     )
 
     fun addEvent(

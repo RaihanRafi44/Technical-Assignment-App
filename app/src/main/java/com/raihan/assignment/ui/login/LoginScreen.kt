@@ -91,6 +91,8 @@ fun LoginScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
                     focusedContainerColor = Color(0xFFF5F5F5),
                     unfocusedContainerColor = Color(0xFFF5F5F5),
                     disabledContainerColor = Color(0xFFF5F5F5),
@@ -113,6 +115,8 @@ fun LoginScreen(
                     .height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = TextFieldDefaults.colors(
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black,
                     focusedContainerColor = Color(0xFFF5F5F5),
                     unfocusedContainerColor = Color(0xFFF5F5F5),
                     disabledContainerColor = Color(0xFFF5F5F5),
@@ -161,9 +165,3 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    // In real app we would mock the VM or use a Stateless content Composable
-    // For preview, we just show the basic layout
-}

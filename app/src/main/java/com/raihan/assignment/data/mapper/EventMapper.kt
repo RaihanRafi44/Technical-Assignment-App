@@ -12,7 +12,7 @@ fun EventEntity.toDomain(isMainEvent: Boolean = false): Event {
         organizer = this.organizer,
         location = this.location,
         description = this.description,
-        imageUri = this.thumbnailUri, // Tambahkan properti ini di EventModel Anda
+        imageUri = this.thumbnailUri,
         isMainEvent = isMainEvent
     )
 }
